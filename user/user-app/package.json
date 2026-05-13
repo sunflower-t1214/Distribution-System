@@ -1,0 +1,22 @@
+{
+  "name": "user-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:app": "uni",
+    "dev:h5": "uni -p h5",
+    "build": "uni build"
+  },
+  "dependencies": {
+    "vue": "3.3.4"
+  },
+  "devDependencies": {
+    "@dcloudio/uni-cli-shared": "*",
+    "@dcloudio/uni-app": "*",
+    "@dcloudio/uni-app-plus": "*",
+    "@dcloudio/uni-h5": "*",
+    "@dcloudio/uni-stat": "*",
+    "@dcloudio/uni-mp-weixin": "*"
+  },
+  "vueVersion": "3"
+}

@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: server
+  datasource:
+    # 这里的 distribution_system 必须是你 MySQL 中实际存在的数据库名
+    url: jdbc:mysql://localhost:3306/distribution_system?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456 # 请确认这是你的 MySQL 密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# MyBatis-Plus 相关配置
+mybatis-plus:
+  configuration:
+    # 开启控制台 SQL 日志，方便你调试本周的注册和登录接口
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto # 对应你 users 表 user_id 的自增设置
