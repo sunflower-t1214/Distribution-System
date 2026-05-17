@@ -114,12 +114,10 @@
         </view>
       </view>
       <view class="product-list">
-        <view class="prod-card" v-for="item in productList" :key="item.productId" @click="toDetail(item.productId)">
+        <view class="prod-card" v-for="item in recommendProducts" :key="item.id" @click="toDetail(item.id)">
           <view class="img-container">
-            <image :src="item.imageUrl || '/static/logo.png'" mode="widthFix" class="p-img"></image>
-            <view class="commission-tag" v-if="(item.commissionRate || 0) > 0">
-              分享赚 ¥{{ ((item.price || 0) * (item.commissionRate || 0) / 100).toFixed(2) }}
-            </view>
+            <image :src="item.img" mode="widthFix" class="p-img"></image>
+            <view class="p-tag" v-if="item.isNew">新品</view>
           </view>
           <view class="p-info">
             <text class="p-name">{{ item.name }}</text>
@@ -128,6 +126,10 @@
                 <text class="unit">￥</text>
                 <text class="integer">{{ item.price }}</text>
               </view>
+              <text class="sales">已售 {{ item.sales }}</text>
+            </view>
+            <view class="commission-info" v-if="isSales && item.commission">
+              <text>佣金：￥{{ item.commission }}</text>
             </view>
           </view>
         </view>
@@ -141,20 +143,18 @@
 <script setup>
 import { ref } from 'vue';
 import { onShow, onLoad } from '@dcloudio/uni-app';
-import request from '@/utils/request';
 
 const cartCount = ref(0);
-const isLoggedIn = ref(false);
+const isLoggedIn = ref(false); 
 const isSales = ref(false);
-const userName = ref('');
+const userName = ref('');      
 
 const hotWordsList = ref(['手机', '电脑', '耳机', '相机', '配件', '家居', '美妆', '食品']);
-const leftCategoryList = ref([{ name: '数码 / 手机', icon: '📱' }, { name: '电脑 / 办公', icon: '💻' }, { name: '家电 / 电器', icon: '🔌' }, { name: '美妆 / 个护', icon: '💄' }, { name: '食品 / 生鲜', icon: '🍎' }, { name: '家居 / 日用', icon: '🏠' }, { name: '服饰 / 鞋包', icon: '👕' }, { name: '运动 / 户外', icon: '⚽' }, { name: '母婴 / 玩具', icon: '👶' }, { name: '更多分类', icon: '📦' }]);
+const leftCategoryList = ref([{ name: '数码/手机', icon: '📱' }, { name: '电脑/办公', icon: '💻' }, { name: '家电/电器', icon: '🔌' }, { name: '美妆/个护', icon: '💄' }, { name: '食品/生鲜', icon: '🍎' }, { name: '家居/日用', icon: '🏠' }, { name: '服饰/鞋包', icon: '👕' }, { name: '运动/户外', icon: '⚽' }, { name: '母婴/玩具', icon: '👶' }, { name: '更多分类', icon: '📦' }]);
 const bannerList = ref([{ img: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&w=1200' }, { img: 'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&w=1200' }, { img: 'https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress&w=1200' }]);
 const sidebarList = ref([{ title: '新品首发', desc: '爆款好物', img: 'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg?auto=compress&w=300', bgColor: '#f0fdf4' }, { title: '精致美妆', desc: '品质之选', img: 'https://images.pexels.com/photos/3394651/pexels-photo-3394651.jpeg?auto=compress&w=300', bgColor: '#f3e8ff' }, { title: '超值百货', desc: '省心省钱', img: 'https://images.pexels.com/photos/4526398/pexels-photo-4526398.jpeg?auto=compress&w=300', bgColor: '#e6f7ff' }, { title: '品质数码', desc: '超值特惠', img: 'https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&w=300', bgColor: '#fff7e6' }]);
-const productList = ref([]);
+const recommendProducts = ref([{ id: 1, name: 'HUAWEI Mate 80 Pro Max 旗舰手机', price: '8499', sales: '2.5k+', isNew: true, isSelf: true, commission: '256', img: 'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg?auto=compress&w=500' }, { id: 2, name: '高性能轻薄笔记本电脑 办公游戏本', price: '6999', sales: '800+', isNew: false, isSelf: true, commission: '210', img: 'https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&w=500' }, { id: 3, name: '主动降噪无线蓝牙耳机 长续航', price: '1299', sales: '1.2k+', isNew: true, isSelf: true, commission: '128', img: 'https://images.pexels.com/photos/3394651/pexels-photo-3394651.jpeg?auto=compress&w=500' }, { id: 4, name: '4K超清防抖运动相机', price: '2499', sales: '300+', isNew: false, isSelf: true, commission: '150', img: 'https://images.pexels.com/photos/1205033/pexels-photo-1205033.jpeg?auto=compress&w=500' }, { id: 5, name: '多功能无线快充充电器 通用款', price: '299', sales: '5k+', isNew: false, isSelf: true, commission: '30', img: 'https://images.pexels.com/photos/4526398/pexels-photo-4526398.jpeg?auto=compress&w=500' }, { id: 6, name: '电竞机械键盘 极光定制版', price: '599', sales: '2k+', isNew: true, isSelf: true, commission: '60', img: 'https://images.pexels.com/photos/1772123/pexels-photo-1772123.jpeg?auto=compress&w=500' }]);
 
-// 🔴 第5周新增：获取推广关系
 onLoad((options) => {
   const shareCode = options.shareCode;
   if (shareCode) {
@@ -177,63 +177,49 @@ onShow(() => {
     isSales.value = false;
     userName.value = '';
   }
-
-  loadProducts()
 });
 
-async function loadProducts() {
-  try {
-    const res = await request({ url: '/api/products/list' })
-    productList.value = Array.isArray(res) ? res : (res.data || [])
-  } catch (e) {
-    console.log('网络详细报错:', e)
-  }
-}
-
-// ================= 点击方法 =================
 const toLogin = () => uni.navigateTo({ url: '/pages/login/login' });
 const toRegister = () => uni.navigateTo({ url: '/pages/register/register' });
 
 const logout = () => {
-  uni.showModal({
-    title: '提示', content: '确定要退出当前账号吗？',
-    success: (res) => {
-      if (res.confirm) {
-        uni.removeStorageSync('token');
-        uni.removeStorageSync('userInfo');
-        isLoggedIn.value = false;
+  uni.showModal({
+    title: '提示', content: '确定要退出当前账号吗？',
+    success: (res) => {
+      if (res.confirm) {
+        uni.removeStorageSync('token');
+        uni.removeStorageSync('userInfo');
+        isLoggedIn.value = false;
         isSales.value = false;
-        uni.showToast({ title: '已安全退出', icon: 'none' });
-      }
-    }
-  });
+        uni.showToast({ title: '已安全退出', icon: 'none' });
+      }
+    }
+  });
 };
 
 const toDistribution = () => {
-	if (!isLoggedIn.value) return uni.showToast({ title: '请先登录', icon: 'none' });
-	uni.navigateTo({ url: '/pages/distribution/index' });
+  if (!isLoggedIn.value) return uni.showToast({ title: '请先登录', icon: 'none' });
+  uni.navigateTo({ url: '/pages/distribution/index' });
 };
 
 const toOrder = () => {
-  if (!isLoggedIn.value) {
-    uni.showToast({ title: '请先登录查看订单', icon: 'none' });
-    setTimeout(() => toLogin(), 1000); 
-    return;
-  }
-  uni.navigateTo({ url: '/pages/order/list' });
+  if (!isLoggedIn.value) {
+    uni.showToast({ title: '请先登录查看订单', icon: 'none' });
+    setTimeout(() => toLogin(), 1000); 
+    return;
+  }
+  uni.navigateTo({ url: '/pages/order/list' });
 };
 
-const toSearch = () => console.log('搜索商品');
+const toSearch = () => uni.navigateTo({ url: '/pages/category/category' });
 const toCart = () => uni.navigateTo({ url: '/pages/cart/cart' });
 const toUser = () => uni.navigateTo({ url: '/pages/userInfo/userInfo' });
 const toDetail = (id) => uni.navigateTo({ url: `/pages/ProductDetail/ProductDetail?id=${id}` });
-const toCategory = (name) => console.log('分类跳转:', name);
+const toCategory = (name) => uni.navigateTo({ url: `/pages/category/category?cat=${encodeURIComponent(name)}` });
 </script>
 
 <style scoped>
-/* 保持原有样式完全不动，仅补充一个醒目的分销按钮颜色 */
 .highlight { color: #e64340 !important; font-weight: bold; }
-/* ... (您原有的 CSS 样式) */
 * { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
 page { background: #f5f5f5; }
 .page-container { min-height: 100vh; padding-bottom: 50rpx; }
@@ -282,7 +268,6 @@ page { background: #f5f5f5; }
 .p-img { width: 100%; height: 100%; object-fit: cover; border-radius: 8rpx 8rpx 0 0; }
 .p-tag, .self-support-tag { position: absolute; top: 10rpx; right: 10rpx; background: #e64340; color: #fff; font-size: 18rpx; padding: 4rpx 10rpx; border-radius: 4rpx; font-weight: 500; }
 .p-tag { left: 10rpx; right: auto; }
-.commission-tag { position: absolute; bottom: 10rpx; left: 10rpx; background: rgba(255, 215, 0, 0.88); color: #8b6914; font-size: 20rpx; font-weight: 600; padding: 4rpx 12rpx; border-radius: 6rpx; backdrop-filter: blur(2px); }
 .p-name { flex: 1; font-size: 24rpx; color: #333; line-height: 32rpx; padding: 10rpx 12rpx 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .price-box { padding: 8rpx 12rpx 12rpx; color: #e64340; font-weight: bold; }
 .unit { font-size: 22rpx; }

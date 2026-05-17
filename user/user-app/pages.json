@@ -62,6 +62,13 @@
 			}
 		},
 		{
+			"path": "pages/category/category",
+			"style": {
+				"navigationBarTitleText": "商品分类",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/distribution/index",
 			"style": {
 				"navigationBarTitleText": "分销中心",

@@ -11,8 +11,13 @@ spring:
 # MyBatis-Plus 相关配置
 mybatis-plus:
   configuration:
-    # 开启控制台 SQL 日志，方便你调试本周的注册和登录接口
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-      id-type: auto # 对应你 users 表 user_id 的自增设置
+      id-type: auto
+
+oss:
+  endpoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: ${ALI_ACCESS_KEY_ID}
+  accessKeySecret: ${ALI_ACCESS_KEY_SECRET}
+  bucketName: dist-system-img
