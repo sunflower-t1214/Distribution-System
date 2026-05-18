@@ -3,6 +3,7 @@ package com.example.server.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @TableName("users")
@@ -24,6 +25,14 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
+    private Integer inviterId;
+    private BigDecimal commissionBalance;
+
+    public Integer getInviterId() { return inviterId; }
+    public void setInviterId(Integer inviterId) { this.inviterId = inviterId; }
+
+    public BigDecimal getCommissionBalance() { return commissionBalance; }
+    public void setCommissionBalance(BigDecimal commissionBalance) { this.commissionBalance = commissionBalance; }
 
     public Integer getUserId() { return userId; }
     public void setUserId(Integer userId) { this.userId = userId; }
@@ -40,6 +49,5 @@ public class User {
     public LocalDateTime getRegisterTime() { return registerTime; }
     public void setRegisterTime(LocalDateTime registerTime) { this.registerTime = registerTime; }
 
-    // 无参构造函数
     public User() {}
 }

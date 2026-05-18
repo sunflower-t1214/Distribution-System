@@ -1,11 +1,14 @@
 package com.example.server.controller;
 
 import com.example.server.common.Result;
+import com.example.server.entity.Sales;
 import com.example.server.entity.User;
+import com.example.server.service.SalesService;
 import com.example.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +20,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SalesService salesService;
 
     private static final Map<String, CodeEntry> codeMap = new ConcurrentHashMap<>();
     private static final Random RANDOM = new Random();
@@ -57,9 +63,30 @@ public class AuthController {
         user.setRole(role);
         userService.updateById(user);
 
+        if ("SALES".equals(role)) {
+            Sales existing = salesService.query().eq("phone", phone).one();
+            if (existing == null) {
+                Sales newSales = new Sales();
+                newSales.setName(user.getName());
+                newSales.setPhone(user.getPhone());
+                newSales.setCreateTime(new java.util.Date());
+                newSales.setCommissionBalance(new java.math.BigDecimal("0.00"));
+                newSales.setTotalSales(new java.math.BigDecimal("0.00"));
+                salesService.save(newSales);
+                user.setSalesId(newSales.getSalesId().intValue());
+            } else {
+                user.setSalesId(existing.getSalesId().intValue());
+            }
+            userService.updateById(user);
+        }
+
         System.out.println("【系统日志】用户 " + phone + " 身份已切换为: " + role);
 
-        return Result.success("身份切换成功");
+        Map<String, Object> result = new HashMap<>();
+        result.put("userId", user.getUserId());
+        result.put("role", user.getRole());
+        result.put("salesId", user.getSalesId());
+        return Result.success(result);
     }
 
     private static class CodeEntry {

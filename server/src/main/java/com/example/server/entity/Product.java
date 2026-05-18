@@ -1,6 +1,7 @@
 package com.example.server.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
@@ -17,6 +18,9 @@ public class Product {
     private String imageUrl;
     private BigDecimal commissionRate;
     private String description;
+
+    @TableField(exist = false)
+    private BigDecimal sharingReward;
 
     public Integer getProductId() { return productId; }
     public void setProductId(Integer productId) { this.productId = productId; }
@@ -44,4 +48,7 @@ public class Product {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public BigDecimal getSharingReward() { return sharingReward; }
+    public void setSharingReward(BigDecimal sharingReward) { this.sharingReward = sharingReward; }
 }

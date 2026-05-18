@@ -9,6 +9,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 # MyBatis-Plus 相关配置
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      timeout: 3000
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
